@@ -1,0 +1,26 @@
+{% extends "home.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h1>Détails du Ticket</h1>
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ ticket.title }}</h5>
+            <p class="card-text">Description: {{ ticket.description }}</p>
+
+            {% if ticket.status == "open" %}
+                <p class="card-text text-success">Statut : {{ ticket.status }}</p>
+            {% else %}
+                <p class="card-text text-danger">Statut : {{ ticket.status }}</p>
+            {% endif %}
+
+            <p class="card-text">Créé le : {{ ticket.created_at }}</p>
+            <p class="card-text">Mis à jour le : {{ ticket.updated_at }}</p>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="{% url 'ticket_list' %}" class="btn btn-secondary">⬅️ Retour</a>
+        <a href="{% url 'ticket_chat' ticket.id %}" class="btn btn-primary">💬 Ouvrir le Chat</a>
+    </div>
+</div>
+{% endblock %}
