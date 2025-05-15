@@ -1,0 +1,133 @@
+{% extends "home.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h5>💬 Chat du Ticket : {{ ticket.title }}</h5>
+        </div>
+        <div class="card-body">
+            <div id="chat-box" class="chat-box mb-3">
+                {% for message in messages %}
+                    <div class="message {% if message.auteur == user %}mine{% else %}other{% endif %}">
+                        <div class="message-bubble">
+                            <strong>
+                                {% if message.auteur %}
+                                    {{ message.auteur.username }}
+                                {% else %}
+                                    {{ message.pseudo }}
+                                {% endif %}
+                            :</strong> {{ message.contenu }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <form id="chat-form" class="d-flex gap-2">
+                {% csrf_token %}
+                {% if not user.is_authenticated %}
+                    <input type="text" id="pseudo" class="form-control" placeholder="Votre pseudo (visiteur)" required>
+                {% endif %}
+                <input type="text" name="message" id="message" class="form-control" placeholder="Votre message..." required>
+                <button type="submit" class="btn btn-primary">Envoyer</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+    const ticketId = {{ ticket.id }};
+    const chatBox = document.getElementById('chat-box');
+    const messageInput = document.getElementById('message');
+    const chatForm = document.getElementById('chat-form');
+    const pseudoInput = document.getElementById('pseudo');
+
+    function loadMessages() {
+        fetch(`/tickets/${ticketId}/messages/`)
+            .then(res => res.json())
+            .then(messages => {
+                chatBox.innerHTML = '';
+                messages.forEach(msg => {
+                    const div = document.createElement('div');
+                    const isMine = isAuthenticated && msg.sender.username === "{{ user.username }}";
+                    div.classList.add('message', isMine ? 'mine' : 'other');
+
+                    const bubble = document.createElement('div');
+                    bubble.classList.add('message-bubble');
+                    bubble.innerHTML = `<strong>${msg.sender.username}:</strong> ${msg.content}`;
+
+                    div.appendChild(bubble);
+                    chatBox.appendChild(div);
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+    }
+
+    setInterval(loadMessages, 3000);
+    loadMessages();
+
+    chatForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const message = messageInput.value.trim();
+        const pseudo = pseudoInput ? pseudoInput.value.trim() : null;
+
+        if (message !== '' && (isAuthenticated || pseudo !== '')) {
+            const body = { contenu: message };
+            if (!isAuthenticated) {
+                body.pseudo = pseudo;
+            }
+
+            fetch(`/tickets/${ticketId}/messages/post/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify(body)
+            })
+            .then(res => res.json())
+            .then(() => {
+                loadMessages();
+                messageInput.value = '';
+            });
+        }
+    });
+</script>
+
+<style>
+    .chat-box {
+        height: 400px;
+        overflow-y: auto;
+        padding: 10px;
+        border: 1px solid #ddd;
+        background: #f8f9fa;
+    }
+
+    .message.mine {
+        text-align: right;
+    }
+
+    .message.other {
+        text-align: left;
+    }
+
+    .message-bubble {
+        display: inline-block;
+        padding: 10px 15px;
+        border-radius: 20px;
+        margin-bottom: 8px;
+        max-width: 70%;
+    }
+
+    .mine .message-bubble {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .other .message-bubble {
+        background-color: #e4e6eb;
+        color: black;
+    }
+</style>
+{% endblock %}
