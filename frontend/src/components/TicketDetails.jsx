@@ -65,10 +65,6 @@ function TicketDetails() {
         return 'bg-green-100 text-green-800 hover:bg-green-200';
       case 'closed':
         return 'bg-red-100 text-red-800 hover:bg-red-200';
-      case 'in_progress':
-        return 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
-      default:
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
     }
   };
 
@@ -78,10 +74,6 @@ function TicketDetails() {
         return 'Ouvert';
       case 'closed':
         return 'Fermé';
-      case 'in_progress':
-        return 'En cours';
-      default:
-        return status;
     }
   };
 
