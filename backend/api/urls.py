@@ -13,7 +13,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('tickets/<int:ticket_id>/messages/', TicketMessageListCreateAPIView.as_view(), name='ticket_messages'),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
-    path('profile/', UserProfileAPIView.as_view(), name='user_profile'),
     path('register/', RegisterAPIView.as_view(), name='register'),
+    path('profile/', UserProfileAPIView.as_view(), name='user_profile'),
 
 ]

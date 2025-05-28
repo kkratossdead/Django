@@ -2,18 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './components/Home';
 import TicketsList from './components/TicketsList';
-import TicketChat from './components/TicketChat';
+import TicketChat from './components/TicketChat.jsx';
 import TicketDetails from './components/TicketDetails';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
 import Footer from './components/Footer';
+import Header from './components/Header';
 import Login from './components/Login';
-import Profile from './components/Profile';
 import Register from './components/Register';
 import TicketCreate from './components/TicketCreate';
 import PrivateRoute from './components/PrivateRoute';
 import TicketEdit from './components/TicketEdit';
-
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css';
 
 
 
@@ -48,29 +47,8 @@ function App() {
 
   return (
     <Router>
-      <Navbar bg="dark" variant="dark">
-        <Navbar.Brand as={Link} to="/">Support Ticket</Navbar.Brand>
-        <Nav className="me-auto">
-          <Nav.Link as={Link} to="/">Accueil</Nav.Link>
-          <Nav.Link as={Link} to="/tickets">Tickets</Nav.Link>
-          <Nav.Link as={Link} to="/tickets/create">Nouveau Ticket</Nav.Link>
+<Header userInfo={userInfo} handleLogout={handleLogout} />
 
-        </Nav>
-        <Nav>
-          {userInfo ? (
-            <>
-              <Navbar.Text className="me-2">Connecté : {userInfo.username}</Navbar.Text>
-              {userInfo.is_staff && <Navbar.Text className="text-warning me-2">ADMIN</Navbar.Text>}
-              <Nav.Link onClick={handleLogout}>Déconnexion</Nav.Link>
-            </>
-          ) : (
-            <>
-              <Nav.Link as={Link} to="/login">Se connecter</Nav.Link>
-              <Nav.Link as={Link} to="/register">S'inscrire</Nav.Link>
-            </>
-          )}
-        </Nav>
-      </Navbar>
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -78,7 +56,6 @@ function App() {
         <Route path="/tickets/:id/chat" element={<TicketChat />} />
         <Route path="/tickets/details/:id" element={<TicketDetails />} />
         <Route path="/login" element={<Login setToken={setToken} />} />
-        <Route path="/profile" element={<Profile token={token} onLogout={handleLogout} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/tickets/create" element={<PrivateRoute><TicketCreate /></PrivateRoute>} />
         <Route path="/tickets/edit/:id" element={<PrivateRoute><TicketEdit /></PrivateRoute>} />
